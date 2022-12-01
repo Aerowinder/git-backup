@@ -42,7 +42,7 @@ foreach ($entry in $ht.GetEnumerator()) {
     }
 
     if ($files.Count -gt $keepbackup - 1) { #Since we are pruning backups first, we must subtract 1 from $keepbackup. Otherwise, we would end up with $keepbackup + 1 total backups.
-        $prune = $files | Sort-Object -Property Name -Descending | Select-Object -Last ($files.Count - $keepbackup) #Must check file count before processing as a negative number results in exception.
+        $prune = $files | Sort-Object -Property Name -Descending | Select-Object -Last ($files.Count - $keepbackup - 1) #Must check file count before processing as a negative number results in exception. Subtracting 1 because pruning happens before backup.
         $prune | ForEach-Object { Remove-Item $_ }#-WhatIf # WhatIf is for testing, dry run.
     }
     
