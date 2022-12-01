@@ -28,6 +28,8 @@ foreach ($entry in $ht.GetEnumerator()) {
     if (-Not(Test-Path -Path $path_live)) {LogWrite ("Error: Folder not found. `n            Folder: " + $path_live); continue} #If live path does not exist, write log file and skip to next iteration of loop.
     New-Item -Path ($path_backup) -ItemType Directory -Force | Out-Null #Create backup folder if it doesn't exist.
 
+    #If you backup before you prune, you will always have a new backup to check against, rendering the age check obsolete. The point of the age check is to verify that the script is running as it should.
+    #If we take the requested backup retention - 1, we can effectively age check the older backups, then create a new one, matching $keepbackup.
 #####PRUNE#####
     $files = Get-ChildItem -Path ($path_backup + '\*') -Include ($entry.Name + '*.7z') #Grab complete list of files in the subfolder.
 
@@ -36,7 +38,7 @@ foreach ($entry in $ht.GetEnumerator()) {
         if (Test-Path $newestfile -OlderThan (Get-Date).AddDays(-7)) {LogWrite ("Error: No new backups found. `n            Folder: " + $path_backup); continue} #If newest log file is older than 7 days, write log file and skip to next iteration of loop.
     }
 
-    if ($files.Count -gt $keepbackup) {
+    if ($files.Count -gt $keepbackup - 1) { #Since we are pruning backups first, we must subtract 1 from $keepbackup. Otherwise, we would end up with $keepbackup + 1 total backups.
         $prune = $files | Sort-Object -Property Name -Descending | Select-Object -Last ($files.Count - $keepbackup) #Must check file count before processing as a negative number results in exception.
         $prune | ForEach-Object { Remove-Item $_ }#-WhatIf # WhatIf is for testing, dry run.
     }
