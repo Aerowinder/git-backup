@@ -1,5 +1,5 @@
 #User customizable variables#
-[string]$dir_parent = Split-Path -Parent $PSScriptRoot #Get parent directory of script root directory.
+[string]$dir_parent = (Split-Path -Parent $PSScriptRoot) + '\' #Get parent directory of script root directory.
 $dir_backup = $dir_parent + 'backup\'
 $file_7za =  $dir_backup + '7za\7za.exe'
 $args_7za = 'a -mx=9 -ms=on -ssw'
@@ -7,6 +7,9 @@ $dir_log = $dir_backup + '_logs'
 $file_log = $dir_log + '\' + (Get-Date -Format yyyy-MM-dd) + '.txt'
 $keepbackup = 24
 #############################
+
+# Error: Folder not found. 
+# Folder: \\10.10.2.1\Gitdns-blackhole
 
 if (-Not(Test-Path -Path $dir_log)) {Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('Log folder not found (' + $dir_log + '), script will terminate.','Git Backup Prune Script','Ok','Error'); break} #If $logdir does not exist, show messagebox then terminate script.
 
