@@ -1,8 +1,5 @@
-#"%onedrive-bin%\7za.exe" a -mx=9 -ms=on -ssw "%nas-dbase%\%mydate%_%mytime%.7z" "%dbase%\*" > "%nas-dbase%\%mydate%_%mytime%.txt"
-
 #User customizable variables#
-[string]$dir_base = $PSScriptRoot
-[string]$dir_parent = Split-Path -Parent $PSScriptRoot
+[string]$dir_parent = Split-Path -Parent $PSScriptRoot #Get parent directory of script root directory.
 $dir_backup = $dir_parent + 'backup\'
 $file_7za =  $dir_backup + '7za\7za.exe'
 $args_7za = 'a -mx=9 -ms=on -ssw'
@@ -57,4 +54,4 @@ foreach ($entry in $ht.GetEnumerator()) {
 if (Test-Path $file_log) {Invoke-Item $file_log} #If log file exists, open it up and leave it on screen.
 
 #Changelog
-#2022-12-01 - AS - v1, First release. Refactored VM Backup prune script for Git backups.
+#2022-12-01 - AS - v1, First release. Refactored VM Backup prune script for Git backup/prune.
