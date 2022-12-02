@@ -1,6 +1,6 @@
 #User customizable variables#
 [string]$dir_parent = (Split-Path -Parent $PSScriptRoot) + '\' #Get parent directory of script root directory.
-$dir_backup = $dir_parent + 'backup\'
+$dir_backup = $dir_parent + '_backup\'
 $file_7za =  $dir_backup + '7za\7za.exe'
 $args_7za = 'a -mx=9 -ms=on -ssw'
 $dir_log = $dir_backup + '_logs'
@@ -62,3 +62,4 @@ if (Test-Path $file_log) {Invoke-Item $file_log} #If log file exists, open it up
 #Changelog
 #2022-12-01 - AS - v1, First release. Refactored VM Backup prune script for Git backup/prune.
 #2022-12-02 - AS - v2, added vm-backup-prune to backup list.
+#2022-12-02 - AS - v3, added _ to backup path for better file explorer sorting.
