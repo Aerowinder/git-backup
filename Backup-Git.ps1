@@ -21,9 +21,11 @@ function LogWrite{ # We don't need to verify $dir_log exists, since the script w
 }
 
 $ht = [ordered]@{} # Key = Mask, Value = Subfolder; hashtable is ordered mostly for log display purposes, technically doesn't matter.
-$ht.Add('dns-blackhole', '-xr!.git') #Folder name, extra 7za switches. -xr!.git excludes entire .git folder.
+$ht.Add('budget-pdq-deploy', '-xr!.git')  #Folder name, extra 7za switches. -xr!.git excludes entire .git folder.
+$ht.Add('dns-blackhole', '-xr!.git')
 $ht.Add('git-backup', '-xr!.git')
 $ht.Add('vm-backup-prune', '-xr!.git')
+$ht.Add('scheduled-task', '-xr!.git')
 
 foreach ($entry in $ht.GetEnumerator()) {
     $path_live = $dir_parent + $entry.Name
@@ -63,3 +65,4 @@ if (Test-Path $file_log) {Invoke-Item $file_log} #If log file exists, open it up
 #2022-12-01 - AS - v1, First release. Refactored VM Backup prune script for Git backup/prune.
 #2022-12-02 - AS - v2, added vm-backup-prune to backup list.
 #2022-12-02 - AS - v3, added _ to backup path for better file explorer sorting.
+#2022-12-02 - AS - v4, added scheduled-task and budged-pdq-deploy to backup list.
