@@ -24,8 +24,8 @@ $ht = [ordered]@{} # Key = Mask, Value = Subfolder; hashtable is ordered mostly 
 $ht.Add('budget-pdq-deploy', '-xr!.git')  #Folder name, extra 7za switches. -xr!.git excludes entire .git folder.
 $ht.Add('dns-blackhole', '-xr!.git')
 $ht.Add('git-backup', '-xr!.git')
-$ht.Add('vm-backup-prune', '-xr!.git')
 $ht.Add('scheduled-task', '-xr!.git')
+$ht.Add('vm-backup-prune', '-xr!.git')
 
 foreach ($entry in $ht.GetEnumerator()) {
     $path_live = $dir_parent + $entry.Name
