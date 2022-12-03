@@ -7,5 +7,6 @@ Automatically backup your synced git repositories to another folder. Can optiona
 <code>$keepbackup = int</code><br>
 Number of backups to keep, default 24. If script runs once per week, this is 6 months worth of backups before any pruning occurs. Once this number is met, the oldest backup will be pruned. Set to arbitrarily large number to disable pruning.<br><br>
 
-<code>$ht.Add('repo-name", '-xr!.git')</code><br>
+Backup-Git - <code>$repo_list = "x","y","z"</code><br> 
+Backup-Git-7za - <code>$ht.Add('repo-name", '-xr!.git')</code><br>
 Add a repo to the backup list. These are explicitly named, so no unintentional backups occur. the hashtable value tells 7zip to ignore the .git folder.

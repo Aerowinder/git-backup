@@ -1,13 +1,12 @@
 #User customizable variables#
 [string]$dir_parent = (Split-Path -Parent $PSScriptRoot) + '\' #Get parent directory of script root directory.
 $dir_backup = $dir_parent + '_backup\'
+$file_7za =  $dir_backup + '7za\7za.exe'
+$args_7za = 'a -mx=9 -ms=on -ssw'
 $dir_log = $dir_backup + '_logs'
 $file_log = $dir_log + '\' + (Get-Date -Format yyyy-MM-dd) + '.txt'
 $keepbackup = 24
 #############################
-
-# Error: Folder not found. 
-# Folder: \\10.10.2.1\Gitdns-blackhole
 
 if (-Not(Test-Path -Path $dir_log)) {Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('Log folder not found (' + $dir_log + '), script will terminate.','Git Backup Prune Script','Ok','Error'); break} #If $logdir does not exist, show messagebox then terminate script.
 
@@ -18,11 +17,17 @@ function LogWrite{ # We don't need to verify $dir_log exists, since the script w
     Add-Content $file_log -Value ($time + ':   ' + $message + "`n")
 }
 
-$repo_backup = "budget-pdq-deploy","credential-manager","dns-blackhole","git-backup","scheduled-task","vm-backup-prune"
+$ht = [ordered]@{} # Key = Mask, Value = Subfolder; hashtable is ordered mostly for log display purposes, technically doesn't matter.
+$ht.Add('budget-pdq-deploy', '-xr!.git')  #Folder name, extra 7za switches. -xr!.git excludes entire .git folder.
+$ht.Add('credential-manager', '-xr!.git')
+$ht.Add('dns-blackhole', '-xr!.git')
+$ht.Add('git-backup', '-xr!.git')
+$ht.Add('scheduled-task', '-xr!.git')
+$ht.Add('vm-backup-prune', '-xr!.git')
 
-foreach ($entry in $repo_backup) {
-    $path_live = $dir_parent + $entry
-    $path_backup = $dir_backup + $entry
+foreach ($entry in $ht.GetEnumerator()) {
+    $path_live = $dir_parent + $entry.Name
+    $path_backup = $dir_backup + $entry.Name
 
     if (-Not(Test-Path -Path $path_live)) {LogWrite ("Error: Folder not found. `n            Folder: " + $path_live); continue} #If live path does not exist, write log file and skip to next iteration of loop.
     New-Item -Path ($path_backup) -ItemType Directory -Force | Out-Null #Create backup folder if it doesn't exist.
@@ -30,7 +35,7 @@ foreach ($entry in $repo_backup) {
     #If you backup before you prune, you will always have a new backup to check against, rendering the age check obsolete. The point of the age check is to verify that the script is running as it should.
     #If we take the requested backup retention - 1, we can effectively age check the older backups, then create a new one, matching $keepbackup.
 #####PRUNE#####
-    $files = Get-ChildItem -Path ($path_backup + '\*') -Include ($entry + '*.zip') #Grab complete list of files in the subfolder.
+    $files = Get-ChildItem -Path ($path_backup + '\*') -Include ($entry.Name + '*.7z') #Grab complete list of files in the subfolder.
 
     if (-Not $null -eq $files) { #At least one backup exists for this entry.
         $newestfile = $files | Sort-Object -Property Name -Descending | Select-Object -First 1 #Select newest file from the list of files in the subfolder.
@@ -47,9 +52,9 @@ foreach ($entry in $repo_backup) {
 
 #####BACKUP#####
     $dt = Get-Date -Format yyyy.MM.dd_HH.mm.ss
-    $dest = $path_backup + '\' + $entry + '_' + $dt + '.zip'
-    $src = $dir_parent + $entry
-    Compress-Archive -Path $src -DestinationPath $dest #Compress-Archive does not pull hidden files, .git will be excluded automatically.
+    $dest = $path_backup + '\' + $entry.Name + '_' + $dt + '.7z'
+    $src = $dir_parent + $entry.Name
+    Start-Process -Wait -FilePath "$file_7za" -ArgumentList $args_7za,$entry.Value,$dest,$src
 }
 
 if (Test-Path $file_log) {Invoke-Item $file_log} #If log file exists, open it up and leave it on screen.
@@ -57,4 +62,4 @@ if (Test-Path $file_log) {Invoke-Item $file_log} #If log file exists, open it up
 #Changelog
 #2022-12-01 - AS - v1, First release. Refactored VM Backup prune script for Git backup/prune.
 #2022-12-02 - AS - v2, added vm-backup-prune, scheduled-task, budget-pdq-deploy, credential-manager to backup list. Added _ to backup path for better file explorer sorting
-#2022-12-03 - AS - v3, removed 7za dependency. Switched hash table to array since we don't need to store key/value pairs anymore.
+#2022-12-03 - AS - v3, renamed to Backup-Git-7za. Backup-Git no longer has a 7za dependency.
