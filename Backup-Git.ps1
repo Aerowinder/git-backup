@@ -18,7 +18,7 @@ function LogWrite{ # We don't need to verify $dir_log exists, since the script w
     Add-Content $file_log -Value ($time + ':   ' + $message + "`n")
 }
 
-$repo_backup = "budget-pdq-deploy","code-dump","credential-manager","dns-blackhole","git-backup","mikrotik-tools","scheduled-task","smartvu-map","vm-backup-prune"
+$repo_backup = "budget-pdq-deploy","cn2od-backup","code-dump","credential-manager","dns-blackhole","git-backup","mikrotik-tools","scheduled-task","smartvu-map","vm-backup-prune"
 
 foreach ($entry in $repo_backup) {
     $path_live = $dir_parent + $entry
