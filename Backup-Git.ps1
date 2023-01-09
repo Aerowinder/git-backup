@@ -6,9 +6,6 @@ $file_log = $dir_log + '\' + (Get-Date -Format yyyy-MM-dd) + '.txt'
 $keepbackup = 24
 #############################
 
-# Error: Folder not found. 
-# Folder: \\10.10.2.1\Gitdns-blackhole
-
 if (-Not(Test-Path -Path $dir_log)) {Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('Log folder not found (' + $dir_log + '), script will terminate.','Git Backup Prune Script','Ok','Error'); break} #If $logdir does not exist, show messagebox then terminate script.
 
 function LogWrite{ # We don't need to verify $dir_log exists, since the script will exit before it gets to this point if it doesn't exist.
@@ -34,7 +31,7 @@ foreach ($entry in $repo_backup) {
 
     if (-Not $null -eq $files) { #At least one backup exists for this entry.
         $newestfile = $files | Sort-Object -Property Name -Descending | Select-Object -First 1 #Select newest file from the list of files in the subfolder.
-        if (Test-Path $newestfile -OlderThan (Get-Date).AddDays(-7)) {LogWrite ("Error: No new backups found. `n            Folder: " + $path_backup); continue} #If newest log file is older than 7 days, write log file and skip to next iteration of loop.
+        if (Test-Path $newestfile -OlderThan (Get-Date).AddDays(-7)) {LogWrite ("Error: No new backups found.`n            Folder: " + $path_backup); continue} #If newest log file is older than 7 days, write log file and skip to next iteration of loop.
     }
 
     if ($files.Count -gt $keepbackup - 1) { #Since we are pruning backups first, we must subtract 1 from $keepbackup. Otherwise, we would end up with $keepbackup + 1 total backups.
